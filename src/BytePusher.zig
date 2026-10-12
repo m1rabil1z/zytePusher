@@ -45,8 +45,8 @@ pub fn outloop(self: *BytePusher) void {
     var b0: u8 = 0;
     var b1: u8 = 0;
 
-    for (0..8) |i| b0 |= self.keypad[i] << @intCast(i);
-    for (8..16) |i| b1 |= self.keypad[i] << @intCast(i - 8);
+    for (0..8) |i| b1 |= self.keypad[i] << @intCast(i);
+    for (8..16) |i| b0 |= self.keypad[i] << @intCast(i - 8);
 
     self.memory[0] = b0;
     self.memory[1] = b1;
