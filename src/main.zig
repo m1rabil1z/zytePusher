@@ -19,7 +19,7 @@ pub fn main(init: std.process.Init) !void {
     const romFilename = args[2];
 
     var platform: Platform = try .init(
-        "z",
+        "zytePusher",
         videoScale * BP.VIDEO_WIDTH,
         videoScale * BP.VIDEO_HEIGHT,
         BP.VIDEO_WIDTH,
@@ -27,7 +27,8 @@ pub fn main(init: std.process.Init) !void {
     );
     defer platform.deinit();
 
-    var bytepusher: BP = .init();
+    const bytepusher = try arena.create(BP);
+    bytepusher.init();
     bytepusher.loadROM(init.io, romFilename) catch {
         std.log.err("Invalid ROM Argument", .{});
         return;

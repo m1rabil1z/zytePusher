@@ -13,15 +13,11 @@ memory: [MEMORY_SIZE]u8,
 video: [VIDEO_HEIGHT * VIDEO_WIDTH]u32,
 pc: u32,
 
-pub fn init() BytePusher {
-    const memory: [MEMORY_SIZE]u8 = [_]u8{0} ** (MEMORY_SIZE);
-
-    return .{
-        .keypad = [_]u8{0} ** (KEY_COUNT),
-        .memory = memory,
-        .video = [_]u32{0} ** (VIDEO_HEIGHT * VIDEO_WIDTH),
-        .pc = PC_ADDRESS,
-    };
+pub fn init(self: *BytePusher) void {
+    @memset(&self.keypad, 0);
+    @memset(&self.memory, 0);
+    @memset(&self.video, 0);
+    self.pc = PC_ADDRESS;
 }
 
 pub fn loadROM(self: *BytePusher, io: std.Io, filename: [:0]const u8) !void {
@@ -57,9 +53,9 @@ pub fn outloop(self: *BytePusher) void {
 
     for (0..(VIDEO_HEIGHT * VIDEO_WIDTH)) |i| {
         const color = self.memory[disp_address + i];
-        const r = (color % 6) * 0x33;
+        const r = ((color / 36) % 6) * 0x33;
         const g = ((color / 6) % 6) * 0x33;
-        const b = ((color / 36) % 6) * 0x33;
+        const b = (color % 6) * 0x33;
 
         if (color < 216) {
             self.video[i] = (@as(u32, r) << 24) | (@as(u32, g) << 16) | (@as(u32, b) << 8) | 0xFF;
