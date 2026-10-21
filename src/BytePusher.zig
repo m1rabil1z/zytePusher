@@ -3,7 +3,7 @@ const BytePusher = @This();
 const std = @import("std");
 
 const KEY_COUNT: u32 = 16;
-const MEMORY_SIZE: u32 = 16777216;
+const MEMORY_SIZE: u32 = 16777216 + 8;
 const PC_ADDRESS = 0x2;
 pub const VIDEO_HEIGHT = 256;
 pub const VIDEO_WIDTH = 256;
@@ -30,9 +30,9 @@ pub fn inloop(self: *BytePusher) void {
     for (0..65536) |_| {
         const a = (@as(u32, self.memory[self.pc]) << 16) | (@as(u32, self.memory[self.pc + 1]) << 8) | (@as(u32, self.memory[self.pc + 2]));
         const b = (@as(u32, self.memory[self.pc + 3]) << 16) | (@as(u32, self.memory[self.pc + 4]) << 8) | (@as(u32, self.memory[self.pc + 5]));
-        const c = (@as(u32, self.memory[self.pc + 6]) << 16) | (@as(u32, self.memory[self.pc + 7]) << 8) | (@as(u32, self.memory[self.pc + 8]));
-
         self.memory[b] = self.memory[a];
+
+        const c = (@as(u32, self.memory[self.pc + 6]) << 16) | (@as(u32, self.memory[self.pc + 7]) << 8) | (@as(u32, self.memory[self.pc + 8]));
         self.pc = c;
     }
 }

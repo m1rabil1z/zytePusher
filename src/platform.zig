@@ -25,6 +25,7 @@ pub fn init(title: [:0]const u8, windowWidth: u32, windowHeight: u32, textureWid
         textureWidth,
         textureHeight,
     );
+    try texture.setScaleMode(.nearest);
 
     return .{
         .window = window,
