@@ -47,6 +47,7 @@ pub fn main(init: std.process.Init) !void {
 
             const videoPitch = @sizeOf(u32) * BP.VIDEO_WIDTH;
             try platform.update(&bytepusher.video, videoPitch);
+            try platform.pushAudio(bytepusher.getAudioSamples());
         }
     }
 }

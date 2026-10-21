@@ -3,11 +3,12 @@ const std = @import("std");
 const sdl = @import("sdl3");
 const bp = @import("BytePusher.zig");
 
-const init_flags: sdl.InitFlags = .{ .video = true };
+const init_flags: sdl.InitFlags = .{ .video = true, .audio = true };
 
 window: sdl.video.Window,
 renderer: sdl.render.Renderer,
 texture: sdl.render.Texture,
+audio_stream: sdl.audio.Stream,
 
 pub fn init(title: [:0]const u8, windowWidth: u32, windowHeight: u32, textureWidth: u32, textureHeight: u32) !Platform {
     try sdl.init(init_flags);
@@ -27,10 +28,25 @@ pub fn init(title: [:0]const u8, windowWidth: u32, windowHeight: u32, textureWid
     );
     try texture.setScaleMode(.nearest);
 
+    const audio_spec: sdl.audio.Spec = .{
+        .format = .signed_8_bit,
+        .num_channels = 1,
+        .sample_rate = 15360,
+    };
+
+    const audio_stream = try sdl.audio.Device.default_playback.openStream(
+        audio_spec,
+        void,
+        null,
+        null,
+    );
+    try audio_stream.resumeDevice();
+
     return .{
         .window = window,
         .renderer = renderer,
         .texture = texture,
+        .audio_stream = audio_stream,
     };
 }
 
@@ -39,6 +55,10 @@ pub fn deinit(self: *Platform) void {
     self.renderer.deinit();
     self.window.deinit();
     sdl.quit(init_flags);
+}
+
+pub fn pushAudio(self: *Platform, samples: []const u8) !void {
+    try self.audio_stream.putData(samples);
 }
 
 pub fn update(self: *Platform, buffer: *[bp.VIDEO_HEIGHT * bp.VIDEO_WIDTH]u32, pitch: usize) !void {

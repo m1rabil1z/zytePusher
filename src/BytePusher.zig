@@ -24,6 +24,11 @@ pub fn loadROM(self: *BytePusher, io: std.Io, filename: [:0]const u8) !void {
     _ = try std.Io.Dir.cwd().readFile(io, filename, self.memory[0..]);
 }
 
+pub fn getAudioSamples(self: *BytePusher) []const u8 {
+    const audio_addr = (@as(u32, self.memory[6]) << 16) | (@as(u32, self.memory[7]) << 8);
+    return self.memory[audio_addr..][0..256];
+}
+
 pub fn inloop(self: *BytePusher) void {
     self.pc = (@as(u32, self.memory[2]) << 16) | (@as(u32, self.memory[3]) << 8) | @as(u32, self.memory[4]);
 
